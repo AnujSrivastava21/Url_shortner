@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Basic reset and font settings */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            width: 80%;
+            height: 80%;
+            max-width: 1200px;
+            max-height: 800px;
+        }
+
+        .form-container {
+            flex: 0 0 40%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center text inside the container */
+        }
+
+        .data-container {
+            flex: 0 0 60%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-left: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s; /* Add transform for animation */
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+
+        button[type="reset"] {
+            background-color: #dc3545;
+        }
+
+        button[type="reset"]:hover {
+            background-color: #c82333;
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+
+        a {
+            text-decoration: none;
+            color: rgb(28, 165, 28);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Generate Your Short ID Here</h1>
+            <form action="/url" method="post">
+                <label for="url">Your URL:</label>
+                <input type="text" id="url" name="url" placeholder="https://example.com" required>
+                <button type="submit">Generate ID</button>
+                <button type="reset">Reset</button>
+            </form>
+            <% if (id) { %> <!-- Display the short URL only if 'id' is present -->
+                <p>Your short URL is: <a href="http://localhost:8000/<%= id %>" target="_blank">http://localhost:8000/<%= id %></a></p>
+            <% } %>
+        </div>
+        <div class="data-container">
+            <% if (locals.url) { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>shortId</th>
+                            <th>Redirect Page</th>
+                            <th>Click</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% url.forEach((url, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= url.shortId %></td>
+                                <td><%= url.redirectURL %></td>
+                                <td><%= url.visitHistory.length %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

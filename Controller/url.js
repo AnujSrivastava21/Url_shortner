@@ -4,44 +4,53 @@ const url = require("../Model/url");
 // Handle creating short URL
 async function handleShortUrl(req, res) {
   const { url: getUrl } = req.body;
-  console.log(getUrl);
-  if(!getUrl){
-    return res.status(400).send({ error: "URL is required" });
+
+  if (!getUrl) {
+    return res.status(400).send({ error: 'URL is required' });
   }
+
   const getId = shortid.generate();
-  console.log(`For ${getUrl} id is generated ${getId}`);
+
   try {
     await url.create({
       shortId: getId,
       redirectURL: getUrl,
       visitHistory: [],
     });
-    console.log("Added in databases");
-    
-    return res.status(201).send({ msg: getId });
+
+    // Render the home view and pass the generated ID
+    return res.render('home', { id: getId });
   } catch (error) {
-    return res.status(500).send({msg:"failed to create short url"})
+    return res.status(500).send({ msg: 'Failed to create short URL' });
   }
 }
 
 // Handle redirect using short URL
- async function getShortURl(req,res) {
+async function getShortURl(req, res) {
   const getId = req.params.shortId;
-  const getEntry = await url.findOneAndUpdate(
-    { shortId: getId }, 
-    { $push: { visitHistory: {
-      timeStamp:Date.now() } }}
-  );
   
-  if(getEntry){
-    console.log("Your value is : " , getEntry);
-  }
-  else{
-    console.log("not found");
+  try {
+    // Find the document and update the visitHistory
+    const getEntry = await url.findOneAndUpdate(
+      { shortId: getId }, 
+      { $push: { visitHistory: { timeStamp: Date.now() } } },
+      { new: true } // Return the updated document
+    );
     
+    if (!getEntry) {
+      console.log(`Short URL with ID ${getId} not found`);
+      return res.status(404).send({ msg: 'Short URL not found' });
+    }
+    
+    console.log('Found entry:', getEntry);
+
+    // Redirect to the original URL
+    return res.redirect(getEntry.redirectURL);
+  } catch (error) {
+    console.error('Error occurred:', error);
+    return res.status(500).send({ msg: 'Server error' });
   }
-  res.redirect(getEntry.redirectURL)
- }
+}
 
 
  async function getAnalysis(req, res) {
